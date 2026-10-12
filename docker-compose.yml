@@ -1,7 +1,7 @@
 services:
   api:
-    build: .
-    env_file: .env
+    build: ./backend
+    env_file: ./backend/.env
     environment:
       APP_HOST: 0.0.0.0
       APP_POSTGRES_DB_HOST: db
@@ -10,6 +10,22 @@ services:
       - "3000:3000"
     depends_on:
       db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:3000/api/v1/', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  frontend:
+    build: ./frontend
+    environment:
+      FASTAPI_URL: http://api:3000
+      AUTH_COOKIE_SECURE: "false"
+    ports:
+      - "3001:3001"
+    depends_on:
+      api:
         condition: service_healthy
 
   db:
