@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fastapi-clean-architecture"
+version = "0.1.0"
+description = "A FastAPI port of the Go clean architecture template"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+dependencies = [
+    "fastapi>=0.143,<1",
+    "uvicorn[standard]>=0.34,<1",
+    "pydantic-settings>=2.8,<3",
+    "email-validator>=2.2,<3",
+    "sqlalchemy>=2.0,<2.1",
+    "psycopg[binary]>=3.2,<4",
+    "alembic>=1.15,<2",
+    "bcrypt>=4.3,<6",
+    "PyJWT>=2.10,<3",
+    "pymongo>=4.10,<5",
+]
+
+[project.optional-dependencies]
+dev = ["httpx2>=2,<3", "pytest>=8.3,<10", "ruff>=0.11,<1"]
+
+[project.scripts]
+clean-api = "src.infrastructure.fastapi.main:run"
+clean-api-migrate = "src.infrastructure.database.postgres.migration.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["src*"]
+
+[tool.setuptools.package-data]
+"src.infrastructure.database.postgres.migration" = ["script.py.mako"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

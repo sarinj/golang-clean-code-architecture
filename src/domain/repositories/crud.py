@@ -1,0 +1,13 @@
+from typing import Any, Protocol
+
+
+class CRUDRepository(Protocol):
+    def get_one_by_id(self, entity_id: str) -> dict[str, Any]: ...
+
+    def get_list(self, page: int, page_size: int) -> tuple[list[dict[str, Any]], int]: ...
+
+    def describe(self) -> dict[str, Any]: ...
+
+
+class CRUDRepositoryFactory(Protocol):
+    def get_repository(self, slug: str) -> CRUDRepository: ...
