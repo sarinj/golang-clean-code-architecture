@@ -13,5 +13,4 @@ export const dataKeys = {
     "record",
     id,
   ],
-  schema: (resource: ResourceSlug) => ["data", resource, "schema"],
 };

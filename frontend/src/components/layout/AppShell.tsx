@@ -1,10 +1,8 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
 
-import { AccountMenu, MobileSignOut } from "@/components/layout/AccountMenu";
-import { ApiStatus } from "@/components/layout/ApiStatus";
+import { AccountMenu } from "@/components/layout/AccountMenu";
 import {
-  Breadcrumb,
+  PageTitle,
   MobileNavigation,
   Navigation,
 } from "@/components/layout/Navigation";
@@ -21,19 +19,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         Skip to content
       </a>
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col overflow-y-auto border-r bg-card p-5 lg:flex">
-        <div className="px-2 pt-2">
+        <div className="px-2 pt-2 pb-8">
           <Brand />
-        </div>
-        <div className="mt-8 mb-7 flex items-center gap-3 rounded-xl border bg-background px-3 py-3">
-          <span className="flex size-8 items-center justify-center rounded-lg border bg-card text-xs font-semibold">
-            W
-          </span>
-          <div>
-            <p className="text-sm font-medium">My workspace</p>
-            <p className="text-[11px] text-muted-foreground">
-              Default workspace
-            </p>
-          </div>
         </div>
         <Navigation />
         <div className="mt-auto pt-8">
@@ -46,11 +33,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="lg:hidden">
             <MobileNavigation />
           </div>
-          <Breadcrumb />
-          <div className="ml-auto flex items-center gap-3">
-            <ApiStatus />
-            <MobileSignOut />
-          </div>
+          <PageTitle />
         </header>
         <main
           id="main-content"
@@ -58,11 +41,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         >
           {children}
         </main>
-        <footer className="mx-auto flex max-w-7xl flex-wrap justify-between gap-2 px-4 pb-6 text-[11px] text-muted-foreground sm:px-8 lg:px-10">
-          <p>Clean API workspace</p>
-          <Link href="/profile" className="underline-offset-4 hover:underline">
-            Your account
-          </Link>
+        <footer className="mx-auto max-w-7xl px-4 pb-6 text-[11px] text-muted-foreground sm:px-8 lg:px-10">
+          <p>Clean API</p>
         </footer>
       </div>
     </div>

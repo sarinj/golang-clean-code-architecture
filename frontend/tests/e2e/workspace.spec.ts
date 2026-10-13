@@ -28,15 +28,24 @@ test("registration, validation, login, profile, and logout connect to FastAPI", 
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: "Workspace overview", exact: true }),
+    page.getByRole("heading", { name: "Overview", exact: true }),
   ).toBeVisible();
   await expect(
     page.getByText("Hello, Jordan Lee.", { exact: true }),
   ).toBeVisible();
-  await page
-    .getByRole("link", { name: "My profile", exact: true })
-    .first()
-    .click();
+  await expect(
+    page
+      .getByRole("navigation", { name: "Main navigation", exact: true })
+      .getByRole("link"),
+  ).toHaveText(["Overview", "Users", "Permissions", "Sessions"]);
+  await expect(page.getByRole("banner")).toHaveText("Overview");
+  const profileLink = page.getByRole("link", {
+    name: "View your profile",
+    exact: true,
+  });
+  await expect(profileLink).toContainText("Jordan Lee");
+  await expect(profileLink).toContainText(email);
+  await profileLink.click();
   await expect(
     page.getByRole("heading", { name: "Personal information" }),
   ).toBeVisible();
@@ -129,10 +138,8 @@ test("hydration reuses fresh server data and explicit refresh reaches the API", 
       fetches.push(url.pathname);
   });
   await page.goto("/data/users");
-  await page.getByRole("button", { name: "View schema" }).click();
-  await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(page.getByRole("table")).toBeVisible();
   expect(fetches).toEqual([]);
-  await page.getByRole("button", { name: "Close", exact: true }).click();
   const refreshed = page.waitForResponse(
     (response) =>
       new URL(response.url()).pathname === "/api/data/users" &&
@@ -140,10 +147,10 @@ test("hydration reuses fresh server data and explicit refresh reaches the API", 
   );
   await page.getByRole("button", { name: "Refresh records" }).click();
   await refreshed;
-  expect(fetches).toContain("/api/data/users");
+  expect(fetches).toEqual(["/api/data/users"]);
 });
 
-test("pagination, schema, details, and empty states use real resource data", async ({
+test("pagination, details, and empty states use real resource data", async ({
   page,
 }) => {
   await createAccount(page.request);
@@ -167,11 +174,9 @@ test("pagination, schema, details, and empty states use real resource data", asy
   ).toBeVisible();
   await page.getByLabel("Rows per page").selectOption("25");
   await expect(page).toHaveURL(/page=1&pageSize=25$/);
-  await page.getByRole("button", { name: "View schema" }).click();
-  const schema = page.getByRole("dialog");
-  await expect(schema).toContainText('"email"');
-  await expect(schema).not.toContainText('"password"');
-  await page.getByRole("button", { name: "Close", exact: true }).click();
+  await expect(page.getByRole("button", { name: "View schema" })).toHaveCount(
+    0,
+  );
   await page
     .getByRole("link", { name: /^View record / })
     .first()
@@ -179,6 +184,9 @@ test("pagination, schema, details, and empty states use real resource data", asy
   await expect(
     page.getByRole("heading", { name: "Record details" }),
   ).toBeVisible();
+  await expect(page.getByRole("button", { name: "View schema" })).toHaveCount(
+    0,
+  );
   await page.getByRole("link", { name: "Permissions", exact: true }).click();
   await expect(
     page.getByText("No permissions yet", { exact: true }),

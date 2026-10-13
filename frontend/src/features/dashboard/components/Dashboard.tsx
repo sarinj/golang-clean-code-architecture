@@ -11,12 +11,10 @@ import {
 } from "lucide-react";
 
 import { QueryError } from "@/components/shared/QueryError";
-import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useProfile } from "@/features/auth/hooks/use-auth";
 import { displayName } from "@/features/auth/lib/user";
-import { useMonitor } from "@/features/dashboard/hooks/use-monitor";
 import { resources, resourceSlugs } from "@/features/data/config/resources";
 import { useRecords } from "@/features/data/hooks/use-data";
 import { displayValue, recordId } from "@/features/data/lib/records";
@@ -158,7 +156,6 @@ function RecentUsers() {
 
 export function Dashboard() {
   const profile = useProfile();
-  const monitor = useMonitor();
   return (
     <div className="space-y-6">
       <div className="relative overflow-hidden rounded-2xl bg-[#172e32] px-6 py-7 text-white sm:px-8 sm:py-8">
@@ -168,13 +165,7 @@ export function Dashboard() {
         />
         <div className="relative flex flex-wrap items-center justify-between gap-5">
           <div>
-            <Badge
-              className="border-white/15 bg-white/8 text-white/80"
-              variant="outline"
-            >
-              Your workspace
-            </Badge>
-            <h2 className="mt-3 text-xl font-medium tracking-tight">
+            <h2 className="text-xl font-medium tracking-tight">
               {profile.data
                 ? `Hello, ${displayName(profile.data)}.`
                 : "Everything in one place."}
@@ -200,58 +191,7 @@ export function Dashboard() {
           <StatCard key={resource} resource={resource} />
         ))}
       </div>
-      <div className="grid items-start gap-6 xl:grid-cols-[1.8fr_1fr]">
-        <RecentUsers />
-        <div className="space-y-6">
-          <section className="rounded-xl border bg-card p-5 shadow-xs">
-            <h2 className="font-semibold">Connection status</h2>
-            <div className="mt-5 flex items-center gap-2">
-              <span
-                className={
-                  monitor.isSuccess && !monitor.isError
-                    ? "size-2 rounded-full bg-emerald-500"
-                    : "size-2 rounded-full bg-amber-500"
-                }
-                aria-hidden="true"
-              />
-              <p className="text-sm font-medium">
-                {monitor.isPending
-                  ? "Checking connection…"
-                  : monitor.isError
-                    ? "Service unavailable"
-                    : "Connected"}
-              </p>
-            </div>
-            <p className="mt-2 text-xs leading-5 text-muted-foreground">
-              {monitor.data && !monitor.isError
-                ? "Your workspace is connected and ready."
-                : "We will check the connection again shortly."}
-            </p>
-            {monitor.data && !monitor.isError ? (
-              <div className="mt-5 flex items-center justify-between border-t pt-4 text-xs text-muted-foreground">
-                <span>Service version</span>
-                <code>{monitor.data.version}</code>
-              </div>
-            ) : null}
-          </section>
-          <section className="rounded-xl border bg-card p-5 shadow-xs">
-            <h2 className="font-semibold">Account details</h2>
-            <p className="mt-2 text-xs leading-5 text-muted-foreground">
-              See your personal information and manage your current session.
-            </p>
-            <Button
-              variant="outline"
-              asChild
-              className="mt-4 w-full justify-between"
-            >
-              <Link href="/profile">
-                My profile
-                <ArrowUpRight aria-hidden="true" />
-              </Link>
-            </Button>
-          </section>
-        </div>
-      </div>
+      <RecentUsers />
     </div>
   );
 }

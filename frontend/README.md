@@ -37,7 +37,7 @@ src/
 ├── features/
 │   ├── auth/                    Authentication forms and session operations
 │   ├── dashboard/               Overview and service status
-│   ├── data/                    Resource browser, schema, and record views
+│   ├── data/                    Resource browser and record views
 │   └── profile/                 ProfileView
 └── lib/
     ├── api/                     Browser Axios client and error normalization
@@ -48,6 +48,8 @@ tests/e2e/                       Browser checks against the real FastAPI API
 ```
 
 Each feature contains the relevant `schemas/`, `api/`, `hooks/`, `server/`, `components/`, or `lib/` modules. Keep modules near the feature that owns them. React component filenames use PascalCase, such as `ProfileView.tsx`. Next.js convention files retain `page.tsx`, `layout.tsx`, `loading.tsx`, and `route.ts`. Import files directly rather than through barrel modules.
+
+The sidebar menu contains Overview, Users, Permissions, and Sessions. Select the signed-in user at the bottom of the desktop or mobile sidebar to open profile. Schema descriptions remain available through the API.
 
 Pages and layouts are server components. Interactive forms, tables, navigation, and query consumers define the client boundaries. Server adapters import `server-only`; browser clients import `client-only`. Zod validates external responses and derives the domain types. The UI uses system fonts and local assets, so builds do not download external fonts.
 
@@ -64,6 +66,10 @@ Profile, dashboard, list, and record data render without browser JavaScript when
 ## Authentication
 
 FastAPI remains responsible for credential verification, JWT validation, refresh rotation, and logout. Next.js stores the access and refresh tokens in HttpOnly, SameSite cookies using the expiry returned by FastAPI. Browser responses, SSR HTML, and dehydrated query state contain public user data and redacted resource records.
+
+The Next.js route handlers form a backend for the frontend. `POST /api/auth/login` forwards credentials to FastAPI and returns the public user while setting the token cookies. `GET /api/auth/profile` calls FastAPI's original `POST /api/v1/users/profile`. Browser refresh and logout return 204; FastAPI keeps its original login envelope and JSON `null` logout response. These browser adapters do not change the backend's [Go-compatible API contract](../backend/docs/api-compatibility.md).
+
+Authentication uses the existing FastAPI service, so this frontend does not need a second authentication framework to verify passwords or issue sessions. Auth.js's Credentials provider can forward to that service, but integrating its session and refresh behavior would still require application code. The current route handlers keep those responsibilities in FastAPI and manage the browser cookies in Next.js. Next.js documents this [backend for frontend pattern](https://nextjs.org/docs/app/guides/backend-for-frontend); Auth.js documents its [Credentials provider](https://authjs.dev/getting-started/authentication/credentials) and [refresh-token integration](https://authjs.dev/guides/refresh-token-rotation).
 
 Server pages with an expired access session redirect to a restoration page. That page sends a same-origin POST to refresh cookies, then returns to the validated original destination. Browser requests share one refresh promise; Web Locks coordinate tabs where available. The refresh adapter first checks the current access cookie, which prevents a queued tab from rotating an already refreshed session. Browsers without Web Locks coordinate within the current tab.
 
@@ -82,7 +88,7 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-The browser checks use the production build and a real running API. Run them against a disposable database; they create accounts and sessions. They cover forms, authentication, pagination, schema/detail views, mobile navigation, protected requests, HttpOnly cookies, token redaction, server rendering without JavaScript, hydration without duplicate initial fetches, and refresh coordination across tabs. One check injects a failed browser response to exercise retry, then retries against the real API.
+The browser checks use the production build and a real running API. Run them against a disposable database; they create accounts and sessions. They cover forms, authentication, pagination, record details, desktop and mobile sidebar navigation and profile access, protected requests, HttpOnly cookies, token redaction, server rendering without JavaScript, hydration without duplicate initial fetches, and refresh coordination across tabs. One check injects a failed browser response to exercise retry, then retries against the real API.
 
 Playwright starts `npm run start` on port 3001 unless a server is already available. For a server on another port, set both variables:
 

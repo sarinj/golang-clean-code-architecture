@@ -1,6 +1,8 @@
+import re
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, Query
+from pydantic import BeforeValidator
 
 from src.domain.entities.crud import DataListResponse, DataResponse
 from src.interface.handlers.fastapi.dependencies import ApplicationDependency, authenticated_user
@@ -14,6 +16,16 @@ router = APIRouter(
 )
 
 
+def _pagination_integer(value: Any, default: int) -> int:
+    if not re.fullmatch(r"[+-]?[0-9]+", str(value)):
+        return default
+    try:
+        number = int(value)
+    except ValueError:
+        return default
+    return number if -(2**63) <= number < 2**63 else default
+
+
 @router.get("/{entity_model_slug}/describe")
 def describe(entity_model_slug: str, application: ApplicationDependency) -> dict[str, Any]:
     return application.crud.describe(entity_model_slug)
@@ -24,8 +36,12 @@ def describe(entity_model_slug: str, application: ApplicationDependency) -> dict
 def retrieve_list(
     entity_model_slug: str,
     application: ApplicationDependency,
-    page: Annotated[int, Query(alias="_page")] = 1,
-    page_size: Annotated[int, Query(alias="_pageSize")] = 10,
+    page: Annotated[
+        int, Query(alias="_page"), BeforeValidator(lambda value: _pagination_integer(value, 1))
+    ] = 1,
+    page_size: Annotated[
+        int, Query(alias="_pageSize"), BeforeValidator(lambda value: _pagination_integer(value, 10))
+    ] = 10,
 ) -> DataListResponse:
     return application.crud.retrieve_list(entity_model_slug, page, page_size)
 

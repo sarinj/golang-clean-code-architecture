@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { dataKeys } from "@/features/data/api/queryKeys";
 import { DataBrowser } from "@/features/data/components/DataBrowser";
-import { SchemaDialog } from "@/features/data/components/SchemaDialog";
 import { resources } from "@/features/data/config/resources";
 import {
   paginationSchema,
@@ -54,7 +53,6 @@ export default async function DataPage({
           eyebrow="Data browser"
           title={resources[resource].title}
           description={resources[resource].description}
-          action={<SchemaDialog resource={resource} />}
         />
         <DataBrowser
           key={resource}

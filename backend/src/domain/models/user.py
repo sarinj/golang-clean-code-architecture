@@ -23,7 +23,7 @@ class UserModel(UserEntity):
 class UserTokenModel:
     id: int = field(metadata={"json_name": "ID"})
     user_id: int | None = field(metadata={"json_name": "UserId"})
-    user: UserEntity | None
+    user: UserEntity | None = field(metadata={"schema_name": "user-model"})
     access: str
     refresh: str
     updated_at: datetime
@@ -33,6 +33,6 @@ class UserTokenModel:
 class UserPermissionModel:
     id: int = field(metadata={"json_name": "ID"})
     user_id: int | None = field(metadata={"json_name": "UserId"})
-    user: UserEntity | None
+    user: UserEntity | None = field(metadata={"schema_name": "user-model"})
     permission: str
     updated_at: datetime

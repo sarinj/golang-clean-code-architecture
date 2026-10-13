@@ -1,0 +1,218 @@
+{
+  "commit": "be30c67013a5c4aaa6ab43b31bf33593ffa98a05",
+  "requests": {
+    "login": {
+      "email": "user@example.com",
+      "password": "example-password"
+    },
+    "logout": {
+      "refresh_token": "refresh-token"
+    },
+    "refresh": {
+      "refresh_token": "refresh-token"
+    },
+    "register": {
+      "email": "user@example.com",
+      "password": "example-password",
+      "first_name": "Alex",
+      "last_name": "Lee"
+    }
+  },
+  "responses": {
+    "detail": {
+      "code": 0,
+      "data": {
+        "id": 1,
+        "email": "user@example.com",
+        "first_name": "Alex",
+        "last_name": "Lee",
+        "created_at": "2026-01-02T03:04:05Z",
+        "updated_at": "2026-01-02T03:04:05Z"
+      },
+      "message": "",
+      "data_schema": {
+        "fields": [
+          {
+            "name": "",
+            "type": "user-entity"
+          }
+        ],
+        "name": "user-model",
+        "type": "record"
+      }
+    },
+    "error": {
+      "trace_id": "users-002",
+      "message": "password is invalid"
+    },
+    "list": {
+      "code": 0,
+      "data": [
+        {
+          "id": 1,
+          "email": "user@example.com",
+          "first_name": "Alex",
+          "last_name": "Lee",
+          "created_at": "2026-01-02T03:04:05Z",
+          "updated_at": "2026-01-02T03:04:05Z"
+        }
+      ],
+      "page": 1,
+      "page_size": 10,
+      "total_page": 1,
+      "total_data": 1,
+      "message": "",
+      "data_schema": {
+        "fields": [
+          {
+            "name": "",
+            "type": "user-entity"
+          }
+        ],
+        "name": "user-model",
+        "type": "record"
+      }
+    },
+    "login": {
+      "user": {
+        "id": 1,
+        "email": "user@example.com",
+        "first_name": "Alex",
+        "last_name": "Lee",
+        "created_at": "2026-01-02T03:04:05Z",
+        "updated_at": "2026-01-02T03:04:05Z"
+      },
+      "token": {
+        "access": "access-token",
+        "refresh": "refresh-token"
+      }
+    },
+    "logout": null,
+    "monitor": {
+      "name": "Migration Test API",
+      "version": "0.1.0"
+    },
+    "permission_record": {
+      "ID": 1,
+      "UserId": 1,
+      "user": {
+        "id": 1,
+        "email": "user@example.com",
+        "first_name": "Alex",
+        "last_name": "Lee",
+        "created_at": "2026-01-02T03:04:05Z",
+        "updated_at": "2026-01-02T03:04:05Z"
+      },
+      "permission": "reader",
+      "updated_at": "2026-01-02T03:04:05Z"
+    },
+    "profile": {
+      "id": 1,
+      "email": "user@example.com",
+      "first_name": "Alex",
+      "last_name": "Lee",
+      "created_at": "2026-01-02T03:04:05Z",
+      "updated_at": "2026-01-02T03:04:05Z"
+    },
+    "register": {
+      "id": 1,
+      "email": "user@example.com",
+      "first_name": "Alex",
+      "last_name": "Lee",
+      "created_at": "2026-01-02T03:04:05Z",
+      "updated_at": "2026-01-02T03:04:05Z"
+    },
+    "token_record": {
+      "ID": 1,
+      "UserId": 1,
+      "user": {
+        "id": 1,
+        "email": "user@example.com",
+        "first_name": "Alex",
+        "last_name": "Lee",
+        "created_at": "2026-01-02T03:04:05Z",
+        "updated_at": "2026-01-02T03:04:05Z"
+      },
+      "access": "access-token",
+      "refresh": "refresh-token",
+      "updated_at": "2026-01-02T03:04:05Z"
+    },
+    "user_record": {
+      "id": 1,
+      "email": "user@example.com",
+      "first_name": "Alex",
+      "last_name": "Lee",
+      "created_at": "2026-01-02T03:04:05Z",
+      "updated_at": "2026-01-02T03:04:05Z"
+    }
+  },
+  "schemas": {
+    "user-permissions": {
+      "fields": [
+        {
+          "name": "",
+          "type": "int"
+        },
+        {
+          "name": "",
+          "type": "int"
+        },
+        {
+          "name": "user",
+          "type": "user-model"
+        },
+        {
+          "name": "permission",
+          "type": "string"
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime"
+        }
+      ],
+      "name": "user-permission-model",
+      "type": "record"
+    },
+    "user-tokens": {
+      "fields": [
+        {
+          "name": "",
+          "type": "int"
+        },
+        {
+          "name": "",
+          "type": "int"
+        },
+        {
+          "name": "user",
+          "type": "user-model"
+        },
+        {
+          "name": "access",
+          "type": "string"
+        },
+        {
+          "name": "refresh",
+          "type": "string"
+        },
+        {
+          "name": "updated_at",
+          "type": "datetime"
+        }
+      ],
+      "name": "user-token-model",
+      "type": "record"
+    },
+    "users": {
+      "fields": [
+        {
+          "name": "",
+          "type": "user-entity"
+        }
+      ],
+      "name": "user-model",
+      "type": "record"
+    }
+  },
+  "upstream": "max38/golang-clean-code-architecture"
+}

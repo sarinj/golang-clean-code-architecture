@@ -1,22 +1,20 @@
-import type { ReactNode } from "react";
-
 export function PageHeader({
   eyebrow,
   title,
   description,
-  action,
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   description: string;
-  action?: ReactNode;
 }) {
   return (
     <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
       <div>
-        <p className="mb-2 text-xs font-semibold tracking-[0.16em] text-muted-foreground uppercase">
-          {eyebrow}
-        </p>
+        {eyebrow ? (
+          <p className="mb-2 text-xs font-semibold tracking-[0.16em] text-muted-foreground uppercase">
+            {eyebrow}
+          </p>
+        ) : null}
         <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
           {title}
         </h1>
@@ -24,7 +22,6 @@ export function PageHeader({
           {description}
         </p>
       </div>
-      {action}
     </div>
   );
 }

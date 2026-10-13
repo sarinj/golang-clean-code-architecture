@@ -24,9 +24,9 @@ def _name(entity: type) -> str:
     return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", name).lower().replace("_", "-")
 
 
-def _schema_type(annotation: Any) -> Any:
+def _schema_type(annotation: Any, name: str | None = None) -> Any:
     if get_origin(annotation) in (UnionType, Union):
-        return [_schema_type(member) for member in get_args(annotation)]
+        return [_schema_type(member, name) for member in get_args(annotation)]
     if annotation is type(None):
         return "null"
     if annotation in (str, int, float, bool, datetime, bytes):
@@ -39,7 +39,7 @@ def _schema_type(annotation: Any) -> Any:
             bytes: "bytes",
         }[annotation]
     if is_dataclass(annotation):
-        return _name(annotation)
+        return name or _name(annotation)
     if get_origin(annotation) is list:
         return {"type": "array", "items": _schema_type(get_args(annotation)[0])}
     if get_origin(annotation) is dict:
@@ -47,20 +47,21 @@ def _schema_type(annotation: Any) -> Any:
     return "unknown"
 
 
-def generate_schema(entity: type) -> dict[str, Any]:
+def generate_schema(entity: type, *, name: str | None = None) -> dict[str, Any]:
     hints = get_type_hints(entity)
     schema_fields = []
     for field in fields(entity):
         if not field.metadata.get("public", True):
             continue
         annotation = hints[field.name]
+        schema_name = field.metadata.get("schema_name")
         field_schema = {
             "name": field.metadata.get("json_name", field.name),
-            "type": _schema_type(annotation),
+            "type": _schema_type(annotation, schema_name),
         }
         members = get_args(annotation) if get_origin(annotation) in (UnionType, Union) else ()
         nested = next((item for item in (annotation, *members) if is_dataclass(item)), None)
         if nested is not None:
-            field_schema["fields"] = generate_schema(nested)
+            field_schema["fields"] = generate_schema(nested, name=schema_name)
         schema_fields.append(field_schema)
-    return {"type": "record", "name": _name(entity), "fields": schema_fields}
+    return {"type": "record", "name": name or _name(entity), "fields": schema_fields}

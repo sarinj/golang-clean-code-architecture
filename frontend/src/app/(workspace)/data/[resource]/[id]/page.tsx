@@ -6,7 +6,6 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { dataKeys } from "@/features/data/api/queryKeys";
 import { RecordDetail } from "@/features/data/components/RecordDetail";
-import { SchemaDialog } from "@/features/data/components/SchemaDialog";
 import { resources } from "@/features/data/config/resources";
 import {
   recordIdSchema,
@@ -43,7 +42,6 @@ export default async function RecordPage({
           eyebrow={resources[resource].title}
           title={`${resources[resource].singular} #${id}`}
           description="View the information stored for this record."
-          action={<SchemaDialog resource={resource} />}
         />
         <RecordDetail resource={resource} id={id} />
       </div>

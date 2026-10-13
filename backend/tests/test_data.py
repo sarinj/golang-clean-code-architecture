@@ -75,6 +75,29 @@ def test_pagination_limits(
     assert response.json()["page_size"] == expected_size
 
 
+@pytest.mark.parametrize(
+    "query,page,size",
+    [
+        ({"_page": "invalid", "_pageSize": "3"}, 1, 3),
+        ({"_page": "2", "_pageSize": "invalid"}, 2, 10),
+        ({"_page": "", "_pageSize": ""}, 1, 10),
+        ({"_page": "1.0", "_pageSize": "1e2"}, 1, 10),
+        ({"_page": " 2 ", "_pageSize": "１２"}, 1, 10),
+        ({"_page": str(2**63), "_pageSize": str(2**63)}, 1, 10),
+        ({"_page": "+1", "_pageSize": "0002"}, 1, 2),
+        ({"page": "2", "pageSize": "2", "email": "missing@example.com"}, 1, 10),
+    ],
+)
+def test_go_pagination_query_parsing(
+    client: TestClient, login: dict, query: dict, page: int, size: int
+) -> None:
+    response = client.get("/api/v1/data/users/", params=query, headers=_headers(login))
+    assert response.status_code == 200
+    assert response.json()["page"] == page
+    assert response.json()["page_size"] == size
+    assert response.json()["total_data"] == 1
+
+
 def test_retrieve_describe_and_nested_user_redaction(client: TestClient, login: dict) -> None:
     headers = _headers(login)
     user_id = login["user"]["id"]
@@ -103,8 +126,7 @@ def test_retrieve_describe_and_nested_user_redaction(client: TestClient, login: 
         "/api/v1/data/users/invalid",
         "/api/v1/data/users/999",
         "/api/v1/data/users/9999999999999999999999999",
-        "/api/v1/data/users/?_page=invalid",
-        "/api/v1/data/users/?_page=99999999999999999999999999999999",
+        "/api/v1/data/users/?_page=9223372036854775807&_pageSize=10",
     ],
 )
 def test_data_errors(client: TestClient, login: dict, path: str) -> None:

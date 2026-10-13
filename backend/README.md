@@ -84,6 +84,8 @@ Each request gets one SQLAlchemy session and transaction. A successful request c
 
 These are the routes registered by the Go application, including its `POST` method for profile retrieval.
 
+The [Go compatibility reference](docs/api-compatibility.md) records request bodies, response keys, and the differences retained from the Python migration. Contract fixtures come from the upstream Go structs at commit `be30c67`.
+
 | Method | Path | Authentication | Result |
 | --- | --- | --- | --- |
 | GET | `/api/v1/` | Public | Application name and version |
@@ -96,7 +98,7 @@ These are the routes registered by the Go application, including its `POST` meth
 | GET | `/api/v1/data/{slug}/{id}` | Bearer access token | Record and schema |
 | GET | `/api/v1/data/{slug}/describe` | Bearer access token | Record schema |
 
-The initial data slugs are `users`, `user-tokens`, and `user-permissions`. Lists accept `_page`, default 1, and `_pageSize`, default 10 and maximum 1000. Pages below 1 become 1; sizes below 1 become 10. Other query parameters are ignored, as in the original handler.
+The initial data slugs are `users`, `user-tokens`, and `user-permissions`. Lists accept `_page`, default 1, and `_pageSize`, default 10 and maximum 1000. Malformed query integers and 64-bit overflow use the respective defaults, as in Go. Pages below 1 become 1; sizes below 1 become 10. Other query parameters are ignored, as in the original handler.
 
 Generic responses keep the original `code`, `data`, `message`, and `data_schema` keys. Lists also include `page`, `page_size`, `total_page`, and `total_data`. Token and permission data keep the Go JSON names `ID` and `UserId`. Passwords are excluded from records, nested users, and schemas. The schema response retains the original record description format, including its `datetime` type; it is not a standard Avro schema.
 
